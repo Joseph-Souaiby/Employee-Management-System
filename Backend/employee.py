@@ -30,3 +30,4 @@ class EmployeeSchema(ma.Schema):
     productivity_score = fields.Integer()
 
 employee_schema=EmployeeSchema()
+employees_schema=EmployeeSchema(many=True)
