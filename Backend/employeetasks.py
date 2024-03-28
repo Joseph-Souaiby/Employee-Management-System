@@ -6,7 +6,7 @@ class EmployeeTask(db.Model):
     task_id = db.Column(db.Integer, db.ForeignKey('task.id'))
     percent_completion = db.Column(db.Float)
 
-    def __init__(self, employee_id, task_id, percent_completion=None):
+    def __init__(self, employee_id, task_id, percent_completion=0.0):
         self.employee_id = employee_id
         self.task_id = task_id
         self.percent_completion = percent_completion
