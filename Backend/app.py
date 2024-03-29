@@ -6,20 +6,6 @@ from dbinit import db,ma,app
 from employee import Employee, employee_schema,employees_schema
 from task import Task, task_schema,tasks_schema
 from employeetasks import EmployeeTask,employee_task_schema,employees_tasks_schema
-from flask_cors import CORS
-
-app = Flask(__name__)
-
-
-CORS(app)
-
-# Make sure you configure your app before binding it with SQLAlchemy instance
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:12345@localHost:3306/ems'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-# Initialize SQLAlchemy and Marshmallow with the Flask app
-db.init_app(app)
-ma.init_app(app)
 
 
 @app.route('/addEmployee',methods=['POST'])
@@ -78,12 +64,12 @@ def addTask():
 @app.route('/getEmployees',methods=['Get'])
 def getEmp():
     employeesList=Employee.query.all()
-    return jsonify(employees_schema.dump(employeesList)),201
+    return jsonify(employees_schema.dump(employeesList)),200
 
 @app.route('/getTasks',methods=['Get'])
 def getTasks():
     taskList=Task.query.all()
-    return jsonify(tasks_schema.dump(taskList)),201
+    return jsonify(tasks_schema.dump(taskList)),200
 
 @app.route('/assignTask',methods=['Post'])
 def assignTask():
