@@ -14,7 +14,6 @@ interface Employee {
 }
 function EmployeeTable() {
   const [employees, setEmployees] = useState<Employee[]>([]);
-
   useEffect(() => {
     const fetchData = async () => {
       const response = await fetch(`${SERVER_URL}/getEmployees`);
