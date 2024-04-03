@@ -69,7 +69,14 @@ def getEmp():
 @app.route('/getTasks',methods=['Get'])
 def getTasks():
     taskList=Task.query.all()
-    return jsonify(tasks_schema.dump(taskList)),200
+    tasks_with_completion = []
+    for task in taskList:
+        completion_percentage = getCompletionForTask(task.id)
+        task_data = task_schema.dump(task)
+        task_data['completion_percentage'] = completion_percentage
+        tasks_with_completion.append(task_data)
+
+    return jsonify(tasks_with_completion), 200
 
 @app.route('/assignTask',methods=['Post'])
 def assignTask():
@@ -114,21 +121,45 @@ def updateCompletion():
         return jsonify({'error': 'Employee task not found.'}), 404
 
 
-@app.route('/getTasksForEmp',methods=['Get'])
-def getTasksforEmp():
-    emp_id = request.args.get('empid')
+@app.route('/getAssignableTasks',methods=['Get'])
+def getAssignableTasks():
+    emp_id = request.args.get('emp_id')
     if not emp_id:
-        return jsonify({'error': 'empid parameter is missing.'}), 400
+        return jsonify({'error': 'emp_id parameter is missing.'}), 400
+    try:
+        emp_id = int(emp_id)
+    except ValueError:
+        return jsonify({'error': 'emp_id must be an integer.'}), 400
+        
+    employee = Employee.query.get(emp_id)
+    if not employee:
+        return jsonify({'error': 'Employee with the provided ID does not exist.'}), 404
 
     employee_tasks = EmployeeTask.query.filter_by(employee_id=emp_id).all()
-    task_data = []
-    for employee_task in employee_tasks:
-        task = Task.query.get(employee_task.task_id)
-        task_info = task_schema.dump(task)
-        task_info['completion_percentage'] = employee_task.percent_completion
-        task_data.append(task_info)
+    employee_taskID=[]
+    for task in employee_tasks:
+        employee_taskID.append(task.id)
 
-    return jsonify(task_data), 200
+    taskList=Task.query.all()
+    tasks_with_completion = []
+    for task in taskList:
+        if task.id in employee_taskID:
+            continue    
+        completion_percentage = getCompletionForTask(task.id)
+        task_data = task_schema.dump(task)
+        task_data['completion_percentage'] = completion_percentage
+        tasks_with_completion.append(task_data)
+
+    return jsonify(tasks_with_completion), 200
+
+
+def getCompletionForTask(task_id):
+    employee_tasks = EmployeeTask.query.filter_by(task_id=task_id).all()
+    total_completion_percentage = sum(employee_task.percent_completion for employee_task in employee_tasks)
+    completion_percentage = total_completion_percentage / len(employee_tasks) if employee_tasks else 0.0
+
+    return completion_percentage
+
 
 if __name__ == '__main__':
     app.run()
