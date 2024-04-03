@@ -5,24 +5,15 @@ import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 
-interface Employee {
-  id: number;
-  name: string;
-  age: number;
-  job_title: string;
-  salary: number;
-  strengths: string;
-  weaknesses: string;
-  productivity_score: number;
-}
 
-function AddEmployee() {
+function AddEmployee({employeesProp, setEmployeesProp}) {
   const [show, setShow] = useState(false);
 
   const handleClose = () => setShow(false);
   const handleAdd = () => {
     setShow(false);
     // I want to chnage the state of the parent component here
+    
 
 
 

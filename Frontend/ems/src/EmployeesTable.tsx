@@ -2,25 +2,15 @@ import React, { useState, useEffect } from 'react';
 import Table from 'react-bootstrap/Table';
 const SERVER_URL = 'http://127.0.0.1:5000'
 
-interface Employee {
-  id: number;
-  name: string;
-  age: number;
-  job_title: string;
-  salary: number;
-  strengths: string;
-  weaknesses: string;
-  productivity_score: number;
-}
-function EmployeeTable() {
-  const [employees, setEmployees] = useState<Employee[]>([]);
+
+function EmployeeTable({employeesProp,setEmployeesProp}) {
   useEffect(() => {
     const fetchData = async () => {
       const response = await fetch(`${SERVER_URL}/getEmployees`);
       if (response.ok) {
         const data = await response.json();
         console.log(data);
-        setEmployees(data);
+        setEmployeesProp(data);
       } else {
         console.error('Failed to fetch employees:', response.status);
       }
@@ -44,7 +34,7 @@ function EmployeeTable() {
         </tr>
       </thead>
       <tbody>
-        {employees.map((employee) => (
+        {employeesProp.map((employee) => (
           <tr key={employee.id}>
             <td>{employee.id}</td>
             <td>{employee.name}</td>
