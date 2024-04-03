@@ -47,7 +47,7 @@ function EmployeeTable({employeesProp,setEmployeesProp,triggerEmployeeValue}) {
             <td>{employee.strengths}</td>
             <td>{employee.weaknesses}</td>
             <td>{employee.productivity_score}</td>
-            <td><AssignTaskButton></AssignTaskButton></td>
+            <td><AssignTaskButton emp_id={employee.id} /></td>
           </tr>
         ))}
       </tbody>

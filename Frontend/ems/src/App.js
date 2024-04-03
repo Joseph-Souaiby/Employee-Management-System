@@ -1,7 +1,7 @@
 import './App.css';
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import EmployeeTable from './EmployeesTable.tsx';
+import EmployeeTable from './EmployeesTable.js';
 import AddEmployee from './AddEmployee.tsx';
 import AddTask from "./AddTask.js";
 
