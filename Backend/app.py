@@ -21,7 +21,7 @@ def addEmployee():
     salary = request.json['salary']
     strengths = request.json.get('strengths', '')  
     weaknesses = request.json.get('weaknesses', '')  
-    productivity_score = request.json.get('score')  
+    productivity_score = request.json.get('productivity_score')  
 
     if (type(id)!=int):
         return jsonify({'error': 'ID must be an integer'}), 400

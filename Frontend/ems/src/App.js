@@ -9,6 +9,12 @@ const SERVER_URL = 'http://127.0.0.1:5000'
 
 function App() {
   const [employees, setEmployees] = useState([]);
+
+  const [refreshEmployees, setRefreshEmployees] = useState(false);
+
+  const triggerEmployeeRefresh = () => {
+    setRefreshEmployees(prevState => !prevState);
+  };
   
 
 
@@ -20,10 +26,10 @@ function App() {
         <hr />   
       </div>
       <div className="employee-table">
-        <EmployeeTable employeesProp = {employees} setEmployeesProp= {setEmployees}/>
+        <EmployeeTable employeesProp = {employees} setEmployeesProp= {setEmployees} triggerEmployeeValue= {refreshEmployees}/>
       </div>
       <div className="add-employee">
-        <AddEmployee employeesProp = {employees} setEmployeesProp= {setEmployees}/>
+        <AddEmployee refreshEmployeesTable = {triggerEmployeeRefresh}/>
       </div>
 
 

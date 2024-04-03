@@ -3,7 +3,7 @@ import Table from 'react-bootstrap/Table';
 const SERVER_URL = 'http://127.0.0.1:5000'
 
 
-function EmployeeTable({employeesProp,setEmployeesProp}) {
+function EmployeeTable({employeesProp,setEmployeesProp,triggerEmployeeValue}) {
   useEffect(() => {
     const fetchData = async () => {
       const response = await fetch(`${SERVER_URL}/getEmployees`);
@@ -17,7 +17,7 @@ function EmployeeTable({employeesProp,setEmployeesProp}) {
     };
 
     fetchData().catch(console.error);
-  }, []);
+  }, [triggerEmployeeValue]);
 
   return (
     <Table striped bordered hover>
