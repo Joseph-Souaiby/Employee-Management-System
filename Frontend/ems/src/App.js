@@ -1,20 +1,22 @@
 import './App.css';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import EmployeeTable from './EmployeesTable.tsx';
 import AddEmployee from './AddEmployee.tsx';
+import AddTask from "./AddTask.js";
 
-const SERVER_URL = 'http://127.0.0.1:5000'
+// const SERVER_URL = 'http://127.0.0.1:5000'
 
 
 function App() {
   const [employees, setEmployees] = useState([]);
-
   const [refreshEmployees, setRefreshEmployees] = useState(false);
-
   const triggerEmployeeRefresh = () => {
     setRefreshEmployees(prevState => !prevState);
   };
+
+
+
   
 
 
@@ -30,6 +32,10 @@ function App() {
       </div>
       <div className="add-employee">
         <AddEmployee refreshEmployeesTable = {triggerEmployeeRefresh}/>
+      </div>
+      <br></br>
+      <div className="add-task">
+        <AddTask />
       </div>
 
 

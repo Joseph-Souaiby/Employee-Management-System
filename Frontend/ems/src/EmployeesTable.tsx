@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import Table from 'react-bootstrap/Table';
+import AssignTaskButton from './AssignTaskButton';
 const SERVER_URL = 'http://127.0.0.1:5000'
 
 
@@ -17,6 +18,7 @@ function EmployeeTable({employeesProp,setEmployeesProp,triggerEmployeeValue}) {
     };
 
     fetchData().catch(console.error);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [triggerEmployeeValue]);
 
   return (
@@ -31,6 +33,7 @@ function EmployeeTable({employeesProp,setEmployeesProp,triggerEmployeeValue}) {
           <th>Strengths</th>
           <th>Weaknesses</th>
           <th>Productivity Score</th>
+          <th>Tasks</th>
         </tr>
       </thead>
       <tbody>
@@ -44,6 +47,7 @@ function EmployeeTable({employeesProp,setEmployeesProp,triggerEmployeeValue}) {
             <td>{employee.strengths}</td>
             <td>{employee.weaknesses}</td>
             <td>{employee.productivity_score}</td>
+            <td><AssignTaskButton></AssignTaskButton></td>
           </tr>
         ))}
       </tbody>
