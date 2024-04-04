@@ -53,7 +53,7 @@ function AddTask() {
     return (
         <>
             <Button variant="secondary" onClick={handleShow}>
-                Add Task
+                Check And Add Task
             </Button>
 
             <Modal show={show} onHide={handleClose}>
