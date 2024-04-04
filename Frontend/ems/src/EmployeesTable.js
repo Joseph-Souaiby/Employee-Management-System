@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import Table from 'react-bootstrap/Table';
 import AssignTaskButton from './AssignTaskButton';
+import EmployeeTaskReport from './EmployeeTaskReport';
 const SERVER_URL = 'http://127.0.0.1:5000'
 
 
@@ -47,7 +48,7 @@ function EmployeeTable({employeesProp,setEmployeesProp,triggerEmployeeValue}) {
             <td>{employee.strengths}</td>
             <td>{employee.weaknesses}</td>
             <td>{employee.productivity_score}</td>
-            <td><AssignTaskButton emp_id={employee.id} /></td>
+            <td><AssignTaskButton emp_id={employee.id} /><EmployeeTaskReport empid={employee.id}/></td>
           </tr>
         ))}
       </tbody>
