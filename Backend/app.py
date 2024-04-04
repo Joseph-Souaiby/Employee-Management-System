@@ -138,7 +138,7 @@ def getAssignableTasks():
     employee_tasks = EmployeeTask.query.filter_by(employee_id=emp_id).all()
     employee_taskID=[]
     for task in employee_tasks:
-        employee_taskID.append(task.id)
+        employee_taskID.append(task.task_id)
 
     taskList=Task.query.all()
     tasks_with_completion = []
