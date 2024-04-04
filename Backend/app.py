@@ -152,6 +152,29 @@ def getAssignableTasks():
 
     return jsonify(tasks_with_completion), 200
 
+@app.route('/getTasksForEmployee',methods=['Get'])
+def getTasksForEmployee():
+    emp_id = request.args.get('emp_id')
+    if not emp_id:
+        return jsonify({'error': 'emp_id parameter is missing.'}), 400
+    try:
+        emp_id = int(emp_id)
+    except ValueError:
+        return jsonify({'error': 'emp_id must be an integer.'}), 400
+        
+    employee = Employee.query.get(emp_id)
+    if not employee:
+        return jsonify({'error': 'Employee with the provided ID does not exist.'}), 404
+
+    employee_tasks = EmployeeTask.query.filter_by(employee_id=emp_id).all()
+    serialized_tasks=[]
+    for task in employee_tasks:
+        task2=Task.query.get(task.task_id)
+        if task2:
+            serialized_tasks.append({'id': task2.id,'name':task2.name, 'description': task2.description,'percent_completion':task.percent_completion})
+    
+    return jsonify(serialized_tasks), 200
+
 
 def getCompletionForTask(task_id):
     employee_tasks = EmployeeTask.query.filter_by(task_id=task_id).all()
