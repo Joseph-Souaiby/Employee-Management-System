@@ -155,7 +155,7 @@ def updateCompletion():
     employee_task = EmployeeTasks.query.filter_by(employee_id=empid, task_id=taskid).first()
     if not employee_task:
         return jsonify({'error': 'Employee task assignment not found.'}), 404
-    #add the need to check if completion more than limit
+
     empWeight=employee_task.weight
     remCompletion=empWeight-empCompletionOnTask(empid,taskid)
     if type(empid)!=int or type(taskid)!=int or type(new_completion)!=int:
@@ -210,19 +210,57 @@ def getTasksForEmployee():
     except ValueError:
         return jsonify({'error': 'emp_id must be an integer.'}), 400
         
-    employee = Employee.query.get(emp_id)
+    employee = Employee.query.filter_by(id=emp_id).all()
     if not employee:
         return jsonify({'error': 'Employee with the provided ID does not exist.'}), 404
 
     employee_tasks = EmployeeTasks.query.filter_by(employee_id=emp_id).all()
     serialized_tasks=[]
     for task in employee_tasks:
-        task2=Task.query.get(task.task_id)
+        percent_completion=0
+        task2=Task.query.filter_by(id=task.task_id).all()
+        task2=task2[0]
         if task2:
-            serialized_tasks.append({'id': task2.id,'name':task2.name, 'description': task2.description,'percent_completion':task.percent_completion})
+            percent_completion=empCompletionOnTask(emp_id,task2.id)
+            serialized_tasks.append({'id': task2.id,'name':task2.name, 'description': task2.description,'weight':task.weight,'percent_completion':percent_completion})
     
     return jsonify(serialized_tasks), 200
 
+@app.route('/getMaxAddablePercentageByTaskByEmployee',methods=['Get'])
+def getMaxAddablePercentageByTaskByEmployee():
+    emp_id = request.args.get('empid')
+    if not emp_id:
+        return jsonify({'error': 'empid parameter is missing.'}), 400
+    try:
+        emp_id = int(emp_id)
+    except ValueError:
+        return jsonify({'error': 'empid must be an integer.'}), 400
+        
+    employee = Employee.query.filter_by(id=emp_id).all()
+    if not employee:
+        return jsonify({'error': 'Employee with the provided ID does not exist.'}), 404
+
+    task_id = request.args.get('taskid')
+    if not task_id:
+        return jsonify({'error': 'task_id parameter is missing.'}), 400
+    try:
+        task_id = int(task_id)
+    except ValueError:
+        return jsonify({'error': 'taskid must be an integer.'}), 400
+        
+    task = Task.query.filter_by(id=task_id).all()
+    if not task:
+        return jsonify({'error': 'Task with the provided ID does not exist.'}), 404
+
+    employee=employee[0]
+    task=task[0]
+    employee_task = EmployeeTasks.query.filter_by(employee_id=employee.id, task_id=task.id).first()
+    if not employee_task:
+        return jsonify({'error': 'Employee task assignment not found.'}), 404
+    
+    empWeight=employee_task.weight
+    remCompletion=empWeight-empCompletionOnTask(employee.id,task.id)
+    return jsonify({"maximum_percentage": remCompletion}),200
 
 def getCompletionForTask(task_id):
     repEntries = ReportEntries.query.filter_by(task_id=task_id).all()
