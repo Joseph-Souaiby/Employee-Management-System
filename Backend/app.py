@@ -262,6 +262,79 @@ def getMaxAddablePercentageByTaskByEmployee():
     remCompletion=empWeight-empCompletionOnTask(employee.id,task.id)
     return jsonify({"maximum_percentage": remCompletion}),200
 
+@app.route('/getTaskUpdatesForEmployee',methods=['Get'])
+def getTaskUpdatesForEmployee():
+    emp_id = request.args.get('emp_id')
+    if not emp_id:
+        return jsonify({'error': 'emp_id parameter is missing.'}), 400
+    try:
+        emp_id = int(emp_id)
+    except ValueError:
+        return jsonify({'error': 'emp_id must be an integer.'}), 400
+        
+    employee = Employee.query.filter_by(id=emp_id).first()
+    if not employee:
+        return jsonify({'error': 'Employee with the provided ID does not exist.'}), 404
+    task_updates = db.session.query(
+        ReportEntries.date,
+        ReportEntries.percent_completion,
+        Task.id,
+        Task.name,
+        Task.description
+    ).join(
+        Task, Task.id == ReportEntries.task_id
+    ).filter(
+        ReportEntries.employee_id == emp_id
+    ).order_by(
+        ReportEntries.date.asc()
+    ).all()
+
+    task_completion_objects = []
+    for update in task_updates:
+        task_completion_objects.append({
+            'datetime': update[0],
+            'percentage': update[1],
+            'taskid': update[2],
+            'name': update[3],
+            'description': update[4]
+        })
+
+    return jsonify(task_completion_objects), 200
+
+@app.route('/getTaskGraphs', methods=['GET'])
+def getTaskGraphs():
+    tasks = Task.query.all()
+    task_graphs = []
+    for task in tasks:
+        task_updates = db.session.query(
+            ReportEntries.date,
+            ReportEntries.percent_completion,
+            ReportEntries.employee_id
+        ).filter_by(
+            task_id=task.id
+        ).order_by(
+            ReportEntries.date
+        ).all()
+
+        task_graph = {
+            'task_id': task.id,
+            'name': task.name,
+            'description': task.description,
+            'updates': [
+                {
+                    'date': update.date,
+                    'completion_percentage': update.percent_completion,
+                    'emp_id': update.employee_id
+                }
+                for update in task_updates
+            ]
+        }
+
+        task_graphs.append(task_graph)
+
+    return jsonify(task_graphs), 200
+
+
 def getCompletionForTask(task_id):
     repEntries = ReportEntries.query.filter_by(task_id=task_id).all()
     total_completion_percentage = sum(entry.percent_completion for entry in repEntries)
