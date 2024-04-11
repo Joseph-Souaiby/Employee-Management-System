@@ -1,21 +1,21 @@
 from dbinit import db,ma
 from marshmallow import fields
-class EmployeeTask(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+class EmployeeTasks(db.Model):
+    id = db.Column(db.Integer, primary_key=True,autoincrement=True)
     employee_id = db.Column(db.Integer, db.ForeignKey('employee.id'))
     task_id = db.Column(db.Integer, db.ForeignKey('task.id'))
-    percent_completion = db.Column(db.Float)
+    weight = db.Column(db.Integer)
 
-    def __init__(self, employee_id, task_id, percent_completion=0.0):
+    def __init__(self, employee_id, task_id, weight):
         self.employee_id = employee_id
         self.task_id = task_id
-        self.percent_completion = percent_completion
+        self.weight = weight
 
-class EmployeeTaskSchema(ma.Schema):
+class EmployeeTasksSchema(ma.Schema):
     id = fields.Integer(dump_only=True)  
     employee_id = fields.Integer(required=True)  
     task_id = fields.Integer(required=True)  
-    percent_completion = fields.Float()
+    weight = fields.Integer()
 
-employee_task_schema=EmployeeTaskSchema()
-employees_tasks_schema=EmployeeTaskSchema(many=True)
+employee_task_schema=EmployeeTasksSchema()
+employees_tasks_schema=EmployeeTasksSchema(many=True)

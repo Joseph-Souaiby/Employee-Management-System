@@ -5,8 +5,24 @@ from flask_marshmallow import Marshmallow
 from dbinit import db,ma,app
 from employee import Employee, employee_schema,employees_schema
 from task import Task, task_schema,tasks_schema
-from employeetasks import EmployeeTask,employee_task_schema,employees_tasks_schema
+from employeetasks import EmployeeTasks,employee_task_schema,employees_tasks_schema
+from reportEntries import ReportEntries, report_entries_schema, report_entry_schema
+from datetime import datetime, date
 
+@app.route('/checkEmployeeId',methods=['Get'])
+def checkEmployeeId():
+    emp_id = request.args.get('emp_id')
+    if not emp_id:
+        return jsonify({'error': 'emp_id parameter is missing.'}), 400
+    try:
+        emp_id = int(emp_id)
+    except ValueError:
+        return jsonify({'error': 'emp_id must be an integer.'}), 400
+    employee = Employee.query.get(emp_id)
+    if not employee:
+        return jsonify({"exists":False})
+    return jsonify({"exists":True})
+    
 
 @app.route('/addEmployee',methods=['POST'])
 def addEmployee():
@@ -41,7 +57,7 @@ def addEmployee():
 
 @app.route('/addTask',methods=['Post'])
 def addTask():
-    required_fields = ['id','name']
+    required_fields = ['id','name','due_date','description']
     for field in required_fields:
         if field not in request.json:
             return jsonify({'error': f'Missing required field: {field}'}), 400
@@ -49,14 +65,19 @@ def addTask():
     id=request.json['id']
     name = request.json['name']
     description=request.json['description']
-
+    due_date=request.json['due_date']
     if (type(id)!=int):
         return jsonify({'error': 'ID must be an integer'}), 400
+    try:
+        due_date = datetime.strptime(due_date, '%Y-%m-%d').date()
+    except ValueError:
+        return jsonify({'error': 'Invalid due_date format. It should have the following format: YYYY-MM-DD'}), 400
+
     existing_task = Task.query.get(id)
     if existing_task:
         return jsonify({'error': 'Task with this ID already exists.'}), 409
 
-    task=Task(id,name,description)
+    task=Task(id,name,description,due_date)
     db.session.add(task)
     db.session.commit()
     return jsonify(task_schema.dump(task)),201
@@ -78,23 +99,45 @@ def getTasks():
 
     return jsonify(tasks_with_completion), 200
 
+
+def taskWeightSum(taskid):
+    weights = [et.weight for et in EmployeeTasks.query.filter_by(task_id=taskid).all()]
+    total_weight = sum(weights)
+    return total_weight
+def empCompletionOnTask(empid,taskid):
+    percents = [et.percent_completion for et in ReportEntries.query.filter_by(task_id=taskid,employee_id=empid).all()]
+    total_percent = sum(percents)
+    return total_percent
+
 @app.route('/assignTask',methods=['Post'])
 def assignTask():
-    required_fields = ['empid','taskid']
+    required_fields = ['empid','taskid','weight']
     for field in required_fields:
         if field not in request.json:
             return jsonify({'error': f'Missing required field: {field}'}), 400
     
     empid=request.json['empid']
     taskid=request.json['taskid']
-    
-    if type(empid)!=int or type(taskid)!=int:
+    weight=request.json['weight'] 
+    if type(empid)!=int or type(taskid)!=int or type(weight)!=int:
         return jsonify({'message':'Bad inputs'}),400
-    employee_task = EmployeeTask.query.filter_by(employee_id=empid, task_id=taskid).first()
+
+    employee = Employee.query.get(empid)
+    if not employee:
+        return jsonify({'error': f'Employee with ID {empid} does not exist.'}), 400
+
+    task = Task.query.get(taskid)
+    if not task:
+        return jsonify({'error': f'Task with ID {taskid} does not exist.'}), 400    
+    employee_task = EmployeeTasks.query.filter_by(employee_id=empid, task_id=taskid).first()
     if employee_task:
         return jsonify({"message":"Employee already assigned this task"}),400
 
-    aet=EmployeeTask(empid,taskid)
+    avWeight=100-taskWeightSum(taskid)
+    if weight<0 or weight>avWeight:
+        return jsonify({"Message":"Invalid weight"}),400
+    
+    aet=EmployeeTasks(empid,taskid,weight)
     db.session.add(aet)
     db.session.commit()
     return jsonify(employee_task_schema.dump(aet)),201
@@ -108,17 +151,23 @@ def updateCompletion():
 
     empid = request.json['empid']
     taskid = request.json['taskid']
-    new_completion = request.json['completion']
-    if type(empid)!=int or type(taskid)!=int or new_completion<0 or new_completion>100:
+    new_completion = request.json['completion'] 
+    employee_task = EmployeeTasks.query.filter_by(employee_id=empid, task_id=taskid).first()
+    if not employee_task:
+        return jsonify({'error': 'Employee task assignment not found.'}), 404
+    #add the need to check if completion more than limit
+    empWeight=employee_task.weight
+    remCompletion=empWeight-empCompletionOnTask(empid,taskid)
+    if type(empid)!=int or type(taskid)!=int or type(new_completion)!=int:
         return jsonify({'message':'Bad inputs'}),400
-    
-    employee_task = EmployeeTask.query.filter_by(employee_id=empid, task_id=taskid).first()
-    if employee_task:
-        employee_task.percent_completion = new_completion
-        db.session.commit()
-        return jsonify({'message': 'Percent completion updated successfully.'}), 200
-    else:
-        return jsonify({'error': 'Employee task not found.'}), 404
+    if new_completion<0 or new_completion>remCompletion:
+        return jsonify({'message':'Invalid completion insertion'}),400
+
+
+    newEntry=ReportEntries(empid,taskid,employee_task.id,new_completion)
+    db.session.add(newEntry)
+    db.session.commit()
+    return jsonify(report_entry_schema.dump(newEntry)),201
 
 
 @app.route('/getAssignableTasks',methods=['Get'])
@@ -131,11 +180,11 @@ def getAssignableTasks():
     except ValueError:
         return jsonify({'error': 'emp_id must be an integer.'}), 400
         
-    employee = Employee.query.get(emp_id)
+    employee = Employee.query.filter_by(id=emp_id)
     if not employee:
         return jsonify({'error': 'Employee with the provided ID does not exist.'}), 404
 
-    employee_tasks = EmployeeTask.query.filter_by(employee_id=emp_id).all()
+    employee_tasks = EmployeeTasks.query.filter_by(employee_id=emp_id).all()
     employee_taskID=[]
     for task in employee_tasks:
         employee_taskID.append(task.task_id)
@@ -145,9 +194,8 @@ def getAssignableTasks():
     for task in taskList:
         if task.id in employee_taskID:
             continue    
-        completion_percentage = getCompletionForTask(task.id)
         task_data = task_schema.dump(task)
-        task_data['completion_percentage'] = completion_percentage
+        task_data['remaining_weight'] = 100-taskWeightSum(task.id)
         tasks_with_completion.append(task_data)
 
     return jsonify(tasks_with_completion), 200
@@ -166,7 +214,7 @@ def getTasksForEmployee():
     if not employee:
         return jsonify({'error': 'Employee with the provided ID does not exist.'}), 404
 
-    employee_tasks = EmployeeTask.query.filter_by(employee_id=emp_id).all()
+    employee_tasks = EmployeeTasks.query.filter_by(employee_id=emp_id).all()
     serialized_tasks=[]
     for task in employee_tasks:
         task2=Task.query.get(task.task_id)
@@ -177,11 +225,10 @@ def getTasksForEmployee():
 
 
 def getCompletionForTask(task_id):
-    employee_tasks = EmployeeTask.query.filter_by(task_id=task_id).all()
-    total_completion_percentage = sum(employee_task.percent_completion for employee_task in employee_tasks)
-    completion_percentage = total_completion_percentage / len(employee_tasks) if employee_tasks else 0.0
+    repEntries = ReportEntries.query.filter_by(task_id=task_id).all()
+    total_completion_percentage = sum(entry.percent_completion for entry in repEntries)
 
-    return completion_percentage
+    return total_completion_percentage
 
 
 if __name__ == '__main__':
