@@ -2,10 +2,14 @@ import Table from 'react-bootstrap/Table';
 import { useLocation } from 'react-router-dom';
 import UpdateCompletion from './UpdateCompletion';
 import { useEffect, useState } from 'react';
+import Button from 'react-bootstrap/Button';
+import { useNavigate } from 'react-router-dom';
 
 function EmployeePage() {
 
     const SERVER_URL = 'http://127.0.0.1:5000'
+
+    const navigate = useNavigate();
 
     let location = useLocation();
     let emp_id = location.state?.emp_id; // Accessing the passed state
@@ -17,7 +21,7 @@ function EmployeePage() {
     const refreshTasks = () => {
         setRefresh(prevValue => !prevValue);
     }
-
+// eslint-disable-next-line
     useEffect(() => { fetchTasks(); }, [refresh]);
 
     const fetchTasks = async () => {
@@ -32,6 +36,12 @@ function EmployeePage() {
     }
 
   return (
+    <div className='App'>
+      <div className='App-header'>
+        <hr />
+        <h1>Employee ID {emp_id} Task Report</h1>
+        <hr />
+      </div>
     <Table striped bordered hover>
       <thead>
         <tr>
@@ -39,7 +49,7 @@ function EmployeePage() {
           <th>Task Name</th>
           <th>Description</th>
           <th>Completion Percentage</th>
-          <th>Modify Percentage</th>
+          <th>Add Percentage</th>
         </tr>
       </thead>
       <tbody>
@@ -54,6 +64,8 @@ function EmployeePage() {
         ))}
       </tbody>
     </Table>
+    <Button variant="danger" onClick={() => navigate('/')} className = "mt-3">Logout</Button>
+    </div>
   );
 }
 

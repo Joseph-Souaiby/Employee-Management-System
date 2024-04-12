@@ -2,10 +2,14 @@ import React, { useEffect } from 'react';
 import Table from 'react-bootstrap/Table';
 import AssignTaskButton from './AssignTaskButton';
 import EmployeeTaskReport from './EmployeeTaskReport';
+import ProgressBar from 'react-bootstrap/ProgressBar';
+
+
 const SERVER_URL = 'http://127.0.0.1:5000'
 
 
 function EmployeeTable({employeesProp,setEmployeesProp,triggerEmployeeValue}) {
+
   useEffect(() => {
     const fetchData = async () => {
       const response = await fetch(`${SERVER_URL}/getEmployees`);
@@ -21,6 +25,12 @@ function EmployeeTable({employeesProp,setEmployeesProp,triggerEmployeeValue}) {
     fetchData().catch(console.error);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [triggerEmployeeValue]);
+
+  const getColor = (score) => {
+    if (score <= 3) return 'danger';
+    if (score <= 6) return 'warning';
+    return 'success';
+  };
 
   return (
     <Table striped bordered hover>
@@ -47,7 +57,7 @@ function EmployeeTable({employeesProp,setEmployeesProp,triggerEmployeeValue}) {
             <td>{employee.salary}</td>
             <td>{employee.strengths}</td>
             <td>{employee.weaknesses}</td>
-            <td>{employee.productivity_score}</td>
+            <td><ProgressBar variant={getColor(employee.productivity_score)} now={employee.productivity_score * 10} label={`${employee.productivity_score}`} /></td>
             <td><AssignTaskButton emp_id={employee.id} /><EmployeeTaskReport empid={employee.id}/></td>
           </tr>
         ))}

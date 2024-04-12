@@ -2,8 +2,10 @@ import './App.css';
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import EmployeeTable from './EmployeesTable.js';
-import AddEmployee from './AddEmployee.tsx';
+import AddEmployee from './AddEmployee.js';
 import AddTask from "./AddTask.js";
+import Button from 'react-bootstrap/Button';
+import { useNavigate } from 'react-router-dom';
 
 // const SERVER_URL = 'http://127.0.0.1:5000'
 
@@ -15,7 +17,7 @@ function App() {
     setRefreshEmployees(prevState => !prevState);
   };
 
-
+  const navigate = useNavigate();
 
   
 
@@ -37,6 +39,9 @@ function App() {
       <div className="add-task">
         <AddTask />
       </div>
+      <Button variant="primary" className = "mt-4">Report</Button>
+      <br></br>
+      <Button variant="danger" onClick={() => navigate('/') } className='mt-4'>Logout</Button>
 
 
     </div>

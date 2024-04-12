@@ -3,6 +3,7 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import TasksTable from './TasksTable.js';
 import TaskInput from './TaskInput.js';
+import moment from 'moment';
 
 const SERVER_URL = 'http://127.0.0.1:5000'
 
@@ -12,16 +13,27 @@ function AddTask() {
     const [id, setId] = useState('');
     const [taskName, setTaskName] = useState('');
     const [description, setDescription] = useState('');
+    const [endDate, setEndDate] = useState("");
+
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
     const handleAdd = async () => {
+        if (id === '' || taskName === '' || description === '' || endDate === '') {
+            alert('Please fill all fields');
+            return;
+        }
+        if (isNaN(id)) {
+            alert('ID must be a number');
+            return;
+        }
         const newTaskk = {
             id: parseInt(id,10),
             name: taskName,
             description: description,
-            completion_percentage: 0
+            due_date: moment(endDate).format('YYYY-MM-DD')
+
         }
         const response = await fetch(`${SERVER_URL}/addTask`, {
             method: 'POST',
@@ -35,6 +47,7 @@ function AddTask() {
             setId(''); 
             setTaskName('');
             setDescription('');
+            setEndDate('');
             // handleClose();
           }
           if (!response.ok) {
@@ -56,18 +69,18 @@ function AddTask() {
                 Check And Add Task
             </Button>
 
-            <Modal show={show} onHide={handleClose}>
+            <Modal show={show} onHide={handleClose} size="lg">
                 <Modal.Header closeButton>
                     <Modal.Title>Add Task</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <TasksTable tasks={tasks} setTasks={setTasks} refreshTasks={refreshTasks}/>
                     <br/>
-                    <TaskInput id={id} setId={setId} taskName={taskName} setTaskName={setTaskName} description={description} setDescription={setDescription}/>
+                    <TaskInput id={id} setId={setId} taskName={taskName} setTaskName={setTaskName} description={description} setDescription={setDescription} endDate={endDate} setEndDate={setEndDate}/>
 
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={handleClose}>
+                    <Button variant="danger" onClick={handleClose}>
                         Close
                     </Button>
                     <Button variant="primary" onClick={handleAdd}>

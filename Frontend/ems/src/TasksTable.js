@@ -29,6 +29,7 @@ function TasksTable({tasks, setTasks, refreshTasks}) {
           <th>Task Name</th>
           <th>Description</th>
           <th>Completion Percentage</th>
+          <th>Due Date</th>
         </tr>
       </thead>
       <tbody>
@@ -38,6 +39,7 @@ function TasksTable({tasks, setTasks, refreshTasks}) {
             <td>{task.name}</td>
             <td>{task.description}</td>
             <td>{task.completion_percentage}</td>
+            <td>{task.due_date}</td>
           </tr>
         ))}
       </tbody>

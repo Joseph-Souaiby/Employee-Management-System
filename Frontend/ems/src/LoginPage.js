@@ -15,8 +15,11 @@ function LoginPage() {
     }
 
     return (
-        <div>
-            <h1>Login Page</h1>
+        <div className='App'>
+            <div className='App-header'>
+                <h1>Login Page</h1>
+                <hr />
+            </div>
             <Button variant="primary" onClick={handleLoginManager}>Login As Manager</Button>
             <Button variant="primary" onClick={handleLoginEmployee}>Login As Employee</Button>
         </div>

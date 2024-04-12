@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback} from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Table from 'react-bootstrap/Table';
@@ -6,7 +6,7 @@ import Table from 'react-bootstrap/Table';
 const SERVER_URL = 'http://127.0.0.1:5000'
 
 
-function EmployeeTaskReport({empid,refresh}) {
+function EmployeeTaskReport({empid}) {
 
   const [show, setShow] = useState(false);
   const [tasks, setTasks] = useState([]);
@@ -14,18 +14,19 @@ function EmployeeTaskReport({empid,refresh}) {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
-  useEffect(() => { fetchTasks(); }, [refresh]);
-
-    const fetchTasks = async () => {
-        const response = await fetch(`${SERVER_URL}/getTasksForEmployee?emp_id=${empid}`);
-        if (response.ok) {
-            const data = await response.json();
-            console.log(data);
-            setTasks(data);
-        } else {
-            console.error('Failed to fetch tasks:', response.status);
-        }
+  const fetchTasks = useCallback(async () => {
+    const response = await fetch(`${SERVER_URL}/getTasksForEmployee?emp_id=${empid}`);
+    if (response.ok) {
+        const data = await response.json();
+        console.log(data);
+        setTasks(data);
+    } else {
+        console.error('Failed to fetch tasks:', response.status);
     }
+}, [empid]);
+
+  useEffect(() => { fetchTasks(); },[show, fetchTasks]);
+
 
   return (
 

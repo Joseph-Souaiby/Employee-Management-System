@@ -39,13 +39,13 @@ function UpdateCompletion({empid,taskid,refresh}) {
 
   return (
     <>
-      <Button variant="secondary" onClick={handleShow}>
-        Update Completion
+      <Button variant="primary" onClick={handleShow}>
+        Add Completion
       </Button>
 
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Update Completion Percentage</Modal.Title>
+          <Modal.Title>Add Completion Percentage</Modal.Title>
         </Modal.Header>
         <Modal.Body>
         <InputGroup className="mb-3">

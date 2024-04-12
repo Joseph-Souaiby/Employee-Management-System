@@ -22,6 +22,31 @@ function AddEmployee({refreshEmployeesTable}) {
 
   const handleClose = () => setShow(false);
   const handleAdd = async () => {
+    // Validate the input
+    if (!id || !name || !age || !job || !salary || !strengths || !weaknesses || !productivityScore) {
+      alert('Please fill in all fields!');
+      return;
+    }
+    // check if id is a number
+    if (isNaN(id)) {
+      alert('ID must be a number!');
+      return;
+    }
+    // check if age is a number
+    if (isNaN(age)) {
+      alert('Age must be a number!');
+      return;
+    }
+    // check if salary is a number
+    if (isNaN(salary)) {
+      alert('Salary must be a number!');
+      return;
+    }
+    // check if productivity score is a number between 0 and 10
+    if (isNaN(productivityScore) || productivityScore < 0 || productivityScore > 10) {
+      alert('Productivity score must be a number between 0 and 10!');
+      return;
+    }
     const newEmployee = {
       id: parseInt(id, 10),  // Assuming ID is a number
       name,
@@ -152,7 +177,7 @@ function AddEmployee({refreshEmployeesTable}) {
             </InputGroup>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
+          <Button variant="danger" onClick={handleClose}>
             Close
           </Button>
           <Button variant="primary" onClick={handleAdd}>
