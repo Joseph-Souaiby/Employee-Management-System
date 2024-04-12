@@ -218,8 +218,7 @@ def getTasksForEmployee():
     serialized_tasks=[]
     for task in employee_tasks:
         percent_completion=0
-        task2=Task.query.filter_by(id=task.task_id).all()
-        task2=task2[0]
+        task2=Task.query.filter_by(id=task.task_id).first()
         if task2:
             percent_completion=empCompletionOnTask(emp_id,task2.id)
             serialized_tasks.append({'id': task2.id,'name':task2.name, 'description': task2.description,'weight':task.weight,'percent_completion':percent_completion})
@@ -236,7 +235,7 @@ def getMaxAddablePercentageByTaskByEmployee():
     except ValueError:
         return jsonify({'error': 'empid must be an integer.'}), 400
         
-    employee = Employee.query.filter_by(id=emp_id).all()
+    employee = Employee.query.filter_by(id=emp_id).first()
     if not employee:
         return jsonify({'error': 'Employee with the provided ID does not exist.'}), 404
 
@@ -248,12 +247,10 @@ def getMaxAddablePercentageByTaskByEmployee():
     except ValueError:
         return jsonify({'error': 'taskid must be an integer.'}), 400
         
-    task = Task.query.filter_by(id=task_id).all()
+    task = Task.query.filter_by(id=task_id).first()
     if not task:
         return jsonify({'error': 'Task with the provided ID does not exist.'}), 404
 
-    employee=employee[0]
-    task=task[0]
     employee_task = EmployeeTasks.query.filter_by(employee_id=employee.id, task_id=task.id).first()
     if not employee_task:
         return jsonify({'error': 'Employee task assignment not found.'}), 404
@@ -341,6 +338,22 @@ def getCompletionForTask(task_id):
 
     return total_completion_percentage
 
+@app.route('/getRemainingWeight',methods=['Get'])
+def getRemainingWeight():
+    task_id = request.args.get('task_id')
+    if not task_id:
+        return jsonify({'error': 'task_id parameter is missing.'}), 400
+    try:
+        task_id = int(task_id)
+    except ValueError:
+        return jsonify({'error': 'task_id must be an integer.'}), 400
+        
+    task = Task.query.filter_by(id=task_id).first()
+    if not task:
+        return jsonify({'error': 'Task with the provided ID does not exist.'}), 404
+
+    remWeight=100-taskWeightSum(task_id)
+    return jsonify({"remaining_weight":remWeight}),200
 
 if __name__ == '__main__':
     app.run()
