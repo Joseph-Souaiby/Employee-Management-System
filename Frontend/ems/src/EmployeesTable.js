@@ -58,7 +58,7 @@ function EmployeeTable({employeesProp,setEmployeesProp,triggerEmployeeValue}) {
             <td>{employee.strengths}</td>
             <td>{employee.weaknesses}</td>
             <td><ProgressBar variant={getColor(employee.productivity_score)} now={employee.productivity_score * 10} label={`${employee.productivity_score}`} /></td>
-            <td><AssignTaskButton emp_id={employee.id} /><EmployeeTaskReport empid={employee.id}/></td>
+            <td><AssignTaskButton emp_id={employee.id}/><EmployeeTaskReport empid={employee.id}/></td>
           </tr>
         ))}
       </tbody>

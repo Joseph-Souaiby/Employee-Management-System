@@ -2,6 +2,10 @@ import { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import AssignableTasksTable from './AssignableTasksTable';
+import InputGroup from 'react-bootstrap/InputGroup';
+import Form from 'react-bootstrap/Form';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 
 const SERVER_URL = 'http://127.0.0.1:5000'
 
@@ -10,6 +14,7 @@ function AssignTaskButton({emp_id}) {
   const [show, setShow] = useState(false);
   const [task_id, setTask_id] = useState('');
   const [refresh, setRefresh] = useState(false);
+  const [weight, setWeight] = useState("");
 
   const triggerRefresh = () => {
     setRefresh(prevState => !prevState);
@@ -18,7 +23,7 @@ function AssignTaskButton({emp_id}) {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   const handleAssign = () => {
-    // Assign task to employee with a post request to assignTask
+    // add the logic of checking if the weight is bigger than max weight
 
     fetch(`${SERVER_URL}/assignTask`, {
         method: 'POST',
@@ -28,11 +33,12 @@ function AssignTaskButton({emp_id}) {
         body: JSON.stringify({
             empid: parseInt(emp_id,10),
             taskid: parseInt(task_id,10),
-            percent_completion: 0.0
+            weight: parseInt(weight,10)
         })
         }).then((response) => {
         if (response.ok) {
             triggerRefresh();
+            setWeight("");
             handleClose();
 
         } else {
@@ -44,16 +50,27 @@ function AssignTaskButton({emp_id}) {
 
   return (
     <>
-      <Button variant="secondary" onClick={handleShow}>
+      <Button variant="secondary" onClick={handleShow} className='me-1'>
         Assign Task
       </Button>
 
-      <Modal show={show} onHide={handleClose}>
+      <Modal show={show} onHide={handleClose} size = "lg">
         <Modal.Header closeButton>
-          <Modal.Title>Assignable Taks</Modal.Title>
+          <Modal.Title>Assignable Tasks</Modal.Title>
         </Modal.Header>
         <Modal.Body>
             <AssignableTasksTable emp_id = {emp_id} setTask_id = {setTask_id} refresh={refresh}></AssignableTasksTable>
+            <InputGroup className="mt-3">
+              <InputGroup.Text id="inputGroup-sizing-default">
+                Weight
+              </InputGroup.Text>
+              <Form.Control
+                aria-label="Default"
+                aria-describedby="inputGroup-sizing-default"
+                  value={weight}
+                onChange={(e) => {setWeight(e.target.value)}}
+              />
+            </InputGroup>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>

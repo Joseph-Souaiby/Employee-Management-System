@@ -25,7 +25,9 @@ function EmployeePage() {
     useEffect(() => { fetchTasks(); }, [refresh]);
 
     const fetchTasks = async () => {
-        const response = await fetch(`${SERVER_URL}/getTasksForEmployee?emp_id=${emp_id}`);
+        const response = await fetch(`${SERVER_URL}/getTasksForEmployee?emp_id=${emp_id}`,
+            { method: 'GET' }
+          );
         if (response.ok) {
             const data = await response.json();
             console.log(data);

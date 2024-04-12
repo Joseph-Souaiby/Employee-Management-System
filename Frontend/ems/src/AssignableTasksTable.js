@@ -42,7 +42,7 @@ function AssignableTasksTable({emp_id,setTask_id}) {
     <Form.Select aria-label="Default select example" onChange={handleSelectChange}>
         {tasks.map((task) => (
             <option key={task.id} value={task.id}>
-            ID: {task.id} | Task Name: {task.name} | Description: {task.description}
+            ID: {task.id} | Task Name: {task.name} | Task Due Date: {task.due_date} | Remaining Weight: {task.remaining_weight}
         </option>
 
         ))}
