@@ -2,12 +2,15 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask import request,jsonify
 from flask_marshmallow import Marshmallow
-from dbinit import db,ma,app
+from dbinit import db,ma,app,mail
 from employee import Employee, employee_schema,employees_schema
 from task import Task, task_schema,tasks_schema
 from employeetasks import EmployeeTasks,employee_task_schema,employees_tasks_schema
 from reportEntries import ReportEntries, report_entries_schema, report_entry_schema
 from datetime import datetime, date
+from flask_mail import Message
+
+
 
 @app.route('/checkEmployeeId',methods=['Get'])
 def checkEmployeeId():
@@ -26,7 +29,7 @@ def checkEmployeeId():
 
 @app.route('/addEmployee',methods=['POST'])
 def addEmployee():
-    required_fields = ['id','name', 'age', 'job', 'salary']
+    required_fields = ['id','name', 'age', 'job', 'salary','email']
     for field in required_fields:
         if field not in request.json:
             return jsonify({'error': f'Missing required field: {field}'}), 400
@@ -35,6 +38,7 @@ def addEmployee():
     age = request.json['age']
     job_title = request.json['job']
     salary = request.json['salary']
+    email=request.json['email']
     strengths = request.json.get('strengths', '')  
     weaknesses = request.json.get('weaknesses', '')  
     productivity_score = request.json.get('productivity_score')  
@@ -49,10 +53,12 @@ def addEmployee():
     existing_employee = Employee.query.get(id)
     if existing_employee:
         return jsonify({'error': 'Employee with this ID already exists.'}), 409
-
-    emp = Employee(id,name,age,job_title,salary,strengths,weaknesses,productivity_score)
-    db.session.add(emp)
-    db.session.commit()
+    try:
+        emp = Employee(id,name,age,job_title,salary,email,strengths,weaknesses,productivity_score)
+        db.session.add(emp)
+        db.session.commit()
+    except:
+        return jsonify({'error': 'Email already exists'}), 400
     return jsonify(employee_schema.dump(emp)),201
 
 @app.route('/addTask',methods=['Post'])
@@ -180,7 +186,7 @@ def getAssignableTasks():
     except ValueError:
         return jsonify({'error': 'emp_id must be an integer.'}), 400
         
-    employee = Employee.query.filter_by(id=emp_id)
+    employee = Employee.query.filter_by(id=emp_id).first()
     if not employee:
         return jsonify({'error': 'Employee with the provided ID does not exist.'}), 404
 
@@ -221,7 +227,7 @@ def getTasksForEmployee():
         task2=Task.query.filter_by(id=task.task_id).first()
         if task2:
             percent_completion=empCompletionOnTask(emp_id,task2.id)
-            serialized_tasks.append({'id': task2.id,'name':task2.name, 'description': task2.description,'weight':task.weight,'percent_completion':percent_completion})
+            serialized_tasks.append({'id': task2.id,'name':task2.name, 'description': task2.description,'weight':task.weight,'percent_completion':percent_completion,'due_date':task2.due_date})
     
     return jsonify(serialized_tasks), 200
 
@@ -354,6 +360,31 @@ def getRemainingWeight():
 
     remWeight=100-taskWeightSum(task_id)
     return jsonify({"remaining_weight":remWeight}),200
+
+@app.route('/requestMeeting', methods=['GET'])
+def request_email():
+    emp_id = request.args.get('emp_id')
+    if not emp_id:
+        return jsonify({'error': 'emp_id parameter is missing.'}), 400
+    try:
+        emp_id = int(emp_id)
+    except ValueError:
+        return jsonify({'error': 'emp_id must be an integer.'}), 400
+        
+    employee = Employee.query.filter_by(id=emp_id).first()
+    if not employee:
+        return jsonify({'error': 'Employee with the provided ID does not exist.'}), 404
+    msg = Message("Zoom Meeting Invitation",
+                  sender="emsmanager1212@outlook.com",
+                  recipients=[employee.email])
+    msg.body = "You are invited to join the Zoom meeting: https://us04web.zoom.us/j/7551346134?pwd=cllaSVlLUDZnSGZJRzYxVTZwbWF3Zz09"
+
+    try:
+        mail.send(msg)
+        return jsonify({'message': 'Email sent.'}), 200
+    except Exception as e:
+        return jsonify({'error': 'Failed to send email.'}), 400
+    
 
 if __name__ == '__main__':
     app.run()
