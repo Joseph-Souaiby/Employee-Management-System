@@ -51,6 +51,7 @@ function EmployeePage() {
           <th>Task Name</th>
           <th>Description</th>
           <th>Completion Percentage</th>
+          <th>Weight Percentage</th>
           <th>Add Percentage</th>
         </tr>
       </thead>
@@ -61,7 +62,8 @@ function EmployeePage() {
             <td>{task.name}</td>
             <td>{task.description}</td>
             <td>{task.percent_completion}</td>
-            <td><UpdateCompletion empid= {emp_id} taskid = {task.id} refresh = {refreshTasks}/></td>
+            <td>{task.weight}</td>
+            <td><UpdateCompletion empid= {emp_id} taskid = {task.id} refresh = {refreshTasks} weight = {task.weight} completion_percentage= {task.percent_completion}/></td>
           </tr>
         ))}
       </tbody>

@@ -24,28 +24,47 @@ function AssignTaskButton({emp_id}) {
   const handleShow = () => setShow(true);
   const handleAssign = () => {
     // add the logic of checking if the weight is bigger than max weight
-
-    fetch(`${SERVER_URL}/assignTask`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            empid: parseInt(emp_id,10),
-            taskid: parseInt(task_id,10),
-            weight: parseInt(weight,10)
-        })
-        }).then((response) => {
+    fetch(`${SERVER_URL}/getRemainingWeight?task_id=${task_id}`, {
+        method: 'GET'
+    }).then((response) => {
         if (response.ok) {
-            triggerRefresh();
-            setWeight("");
-            handleClose();
-
+            return response.json();
         } else {
-            console.error('Failed to assign task:', response);
+            console.error('Failed to fetch remaining weight:', response);
         }
-        }).catch(console.error);
-    }
+    }).then((data) => {
+        if (parseInt(weight,10) > parseInt(data.remaining_weight,10)) {
+            alert("The weight is bigger than the remaining weight");
+        }
+        else {
+            assignTask();
+        }
+    }).catch(console.error);
+  }
+
+
+  const assignTask = async () => {
+    fetch(`${SERVER_URL}/assignTask`, {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+              empid: parseInt(emp_id,10),
+              taskid: parseInt(task_id,10),
+              weight: parseInt(weight,10)
+          })
+          }).then((response) => {
+          if (response.ok) {
+              triggerRefresh();
+              setWeight("");
+              handleClose();
+
+          } else {
+              console.error('Failed to assign task:', response);
+          }
+          }).catch(console.error);
+  }
 
 
   return (

@@ -5,7 +5,7 @@ import InputGroup from 'react-bootstrap/InputGroup';
 import Form from 'react-bootstrap/Form';
 
 
-function UpdateCompletion({empid,taskid,refresh}) {
+function UpdateCompletion({empid,taskid,refresh,weight,completion_percentage}) {
 
     const SERVER_URL = 'http://127.0.0.1:5000'
 
@@ -16,6 +16,10 @@ function UpdateCompletion({empid,taskid,refresh}) {
   const handleShow = () => setShow(true);
 
     const handleUpdate = async () => {
+        if (percent > weight - completion_percentage){
+          alert("Percentage Added Exceeds Max Weight For This Task")
+          return
+        }
         console.log(percent);
         fetch(`${SERVER_URL}/updateCompletion`, {
             method: 'PUT',
@@ -27,6 +31,7 @@ function UpdateCompletion({empid,taskid,refresh}) {
         .then(response => response.json())
         .then(data => {
             console.log('Success:', data);
+            setPercent("");
             refresh();
             handleClose();
         })
