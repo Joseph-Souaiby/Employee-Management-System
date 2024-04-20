@@ -20,6 +20,10 @@ function UpdateCompletion({empid,taskid,refresh,weight,completion_percentage}) {
           alert("Percentage Added Exceeds Max Weight For This Task")
           return
         }
+        else if (percent <= 0){
+          alert("Percentage Added Must Be Greater Than 0")
+          return
+        }
         console.log(percent);
         fetch(`${SERVER_URL}/updateCompletion`, {
             method: 'PUT',

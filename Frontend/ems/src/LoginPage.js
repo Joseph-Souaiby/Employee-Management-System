@@ -20,8 +20,10 @@ function LoginPage() {
                 <h1>Login Page</h1>
                 <hr />
             </div>
-            <Button variant="primary" onClick={handleLoginManager}>Login As Manager</Button>
-            <Button variant="primary" onClick={handleLoginEmployee}>Login As Employee</Button>
+            <div className='mt-5'>
+            <Button variant="primary" onClick={handleLoginManager} size="lg" className="me-3">Login As Manager</Button>
+            <Button variant="primary" onClick={handleLoginEmployee} size="lg">Login As Employee</Button>
+            </div>
         </div>
     );
 }

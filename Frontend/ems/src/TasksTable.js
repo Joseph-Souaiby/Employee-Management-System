@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import Table from 'react-bootstrap/Table';
+import ProgressBar from 'react-bootstrap/ProgressBar';
 
 const SERVER_URL = 'http://127.0.0.1:5000'
 
@@ -38,7 +39,7 @@ function TasksTable({tasks, setTasks, refreshTasks}) {
             <td>{task.id}</td>
             <td>{task.name}</td>
             <td>{task.description}</td>
-            <td>{task.completion_percentage}</td>
+            <td><ProgressBar now={task.completion_percentage} label={`${task.completion_percentage}%`} /></td>
             <td>{task.due_date}</td>
           </tr>
         ))}
