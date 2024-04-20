@@ -36,6 +36,9 @@ function AssignTaskButton({emp_id}) {
         if (parseInt(weight,10) > parseInt(data.remaining_weight,10)) {
             alert("The weight is bigger than the remaining weight");
         }
+        else if(parseInt(weight,10) <= 0){
+            alert("The weight should be bigger than 0");
+        }
         else {
             assignTask();
         }

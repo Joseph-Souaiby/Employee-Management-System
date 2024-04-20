@@ -28,6 +28,16 @@ function AddTask() {
             alert('ID must be a number');
             return;
         }
+        // check if end date is in the future
+        if (moment(endDate).isBefore(moment().format('YYYY-MM-DD'))) {
+            alert('End date must be in the future');
+            return;
+        }
+        // check if date is valid
+        if (!moment(endDate).isValid()) {
+            alert('End date must be valid');
+            return;
+        }
         const newTaskk = {
             id: parseInt(id,10),
             name: taskName,

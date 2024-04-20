@@ -19,11 +19,12 @@ function AddEmployee({refreshEmployeesTable}) {
   const [strengths, setStrengths] = useState('');
   const [weaknesses, setWeaknesses] = useState('');
   const [productivityScore, setProductivityScore] = useState('');
+  const [email, setEmail] = useState('');
 
   const handleClose = () => setShow(false);
   const handleAdd = async () => {
     // Validate the input
-    if (!id || !name || !age || !job || !salary || !strengths || !weaknesses || !productivityScore) {
+    if (!id || !name || !age || !job || !salary || !strengths || !weaknesses || !productivityScore || !email) {
       alert('Please fill in all fields!');
       return;
     }
@@ -47,9 +48,16 @@ function AddEmployee({refreshEmployeesTable}) {
       alert('Productivity score must be a number between 0 and 10!');
       return;
     }
+    // check if email is valid
+    if (!email.includes('@')) {
+      alert('Email must be valid!');
+      return;
+    }
+
     const newEmployee = {
       id: parseInt(id, 10),  // Assuming ID is a number
       name,
+      email,
       age: parseInt(age, 10), // Assuming age is a number
       job,
       salary: parseFloat(salary), // Assuming salary is a decimal number
@@ -78,6 +86,7 @@ function AddEmployee({refreshEmployeesTable}) {
     setStrengths('');
     setWeaknesses('');
     setProductivityScore('');
+    setEmail('');
 
     // Refresh the employees table
     refreshEmployeesTable();
@@ -118,6 +127,15 @@ function AddEmployee({refreshEmployeesTable}) {
               <Form.Control
                 value={name}
                 onChange={e => setName(e.target.value)}
+                type="text"
+              />
+            </InputGroup>
+
+            <InputGroup className="mb-3">
+              <InputGroup.Text>Email</InputGroup.Text>
+              <Form.Control
+                value={email}
+                onChange={e => setEmail(e.target.value)}
                 type="text"
               />
             </InputGroup>
