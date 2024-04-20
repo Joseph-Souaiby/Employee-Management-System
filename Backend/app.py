@@ -327,7 +327,8 @@ def getTaskGraphs():
                 {
                     'date': update.date,
                     'completion_percentage': update.percent_completion,
-                    'emp_id': update.employee_id
+                    'emp_id': update.employee_id,
+                    'emp_name': Employee.query.filter_by(id=update.employee_id).first().name
                 }
                 for update in task_updates
             ]
