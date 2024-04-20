@@ -39,7 +39,7 @@ function EmployeePage() {
     }
   
   const color = (completion,weight) => {
-    if (weight == completion){
+    if (weight === completion){
       return "success"
     }
     else{
@@ -72,7 +72,7 @@ function EmployeePage() {
             <td>{task.name}</td>
             <td>{task.description}</td>
             <td><ProgressBar animated now={task.percent_completion} label={task.percent_completion} variant={color(task.percent_completion,task.weight)}/></td>
-            <td><ProgressBar now={task.weight} label={`${task.weight}%`}/>;</td>
+            <td><ProgressBar now={task.weight} label={`${task.weight}%`}/></td>
             <td><UpdateCompletion empid= {emp_id} taskid = {task.id} refresh = {refreshTasks} weight = {task.weight} completion_percentage= {task.percent_completion}/></td>
           </tr>
         ))}

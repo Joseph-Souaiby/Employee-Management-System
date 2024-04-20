@@ -4,8 +4,6 @@ import AssignTaskButton from './AssignTaskButton';
 import EmployeeTaskReport from './EmployeeTaskReport';
 import ProgressBar from 'react-bootstrap/ProgressBar';
 import Button from 'react-bootstrap/Button';
-import Alert from 'react-bootstrap/Alert';
-import { useState } from 'react';
 
 
 const SERVER_URL = 'http://127.0.0.1:5000'

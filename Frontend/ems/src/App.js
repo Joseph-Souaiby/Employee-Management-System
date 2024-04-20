@@ -6,6 +6,7 @@ import AddEmployee from './AddEmployee.js';
 import AddTask from "./AddTask.js";
 import Button from 'react-bootstrap/Button';
 import { useNavigate } from 'react-router-dom';
+import Report from './Report.js';
 
 // const SERVER_URL = 'http://127.0.0.1:5000'
 
@@ -39,7 +40,7 @@ function App() {
       <div className="add-task">
         <AddTask />
       </div>
-      <Button variant="primary" className = "mt-4">Report</Button>
+      <Report/>
       <br></br>
       <Button variant="danger" onClick={() => navigate('/') } className='mt-4'>Logout</Button>
 

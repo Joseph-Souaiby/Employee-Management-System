@@ -51,7 +51,7 @@ function EmployeeTaskReport({empid}) {
   useEffect(() => { fetchTasks(); },[show, fetchTasks]);
 
   const color = (completion,weight) => {
-    if (weight == completion){
+    if (weight === completion){
       return "success"
     }
     else{
@@ -59,17 +59,9 @@ function EmployeeTaskReport({empid}) {
     }
   }
 
-  // const data = [
-  //   ["Element", "Density", { role: "style" }],
-  //   ["Copper", 8.94, "#b87333"], // RGB value
-  //   ["Silver", 10.49, "silver"], // English color name
-  //   ["Gold", 19.3, "gold"],
-  //   ["Platinum", 21.45, "color: #e5e4e2"], // CSS-style declaration
-  // ];
-
   const data = [
     ['Task', 'Progress Percentage', { role: 'style' }],
-    ...tasks.map(task => [task.name + "\nDate: " + task.datetime, parseInt(task.percentage, 10), 'color: blue'])
+    ...tasks.map(task => [task.name + "\nDate: " + task.datetime, parseInt(task.percentage, 10), 'color: green'])
   ];
 
   // Chart options
@@ -90,9 +82,9 @@ function EmployeeTaskReport({empid}) {
         Task Report
       </Button>
 
-      <Modal show={show} onHide={handleClose} size="lg">
+      <Modal show={show} onHide={handleClose} size="xl">
         <Modal.Header closeButton>
-          <Modal.Title>Modal heading</Modal.Title>
+          <Modal.Title>Task Report</Modal.Title>
         </Modal.Header>
         <Modal.Body>
         
@@ -121,7 +113,7 @@ function EmployeeTaskReport({empid}) {
             <td>{task.name}</td>
             <td>{task.description}</td>
             <td><ProgressBar animated now={task.percent_completion} label={task.percent_completion} variant={color(task.percent_completion,task.weight)}/></td>
-            <td><ProgressBar now={task.weight} label={`${task.weight}%`}/>;</td>
+            <td><ProgressBar now={task.weight} label={`${task.weight}%`}/></td>
           </tr>
         ))}
       </tbody>

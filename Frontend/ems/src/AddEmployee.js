@@ -23,36 +23,61 @@ function AddEmployee({refreshEmployeesTable}) {
 
   const handleClose = () => setShow(false);
   const handleAdd = async () => {
-    // Validate the input
     if (!id || !name || !age || !job || !salary || !strengths || !weaknesses || !productivityScore || !email) {
       alert('Please fill in all fields!');
       return;
     }
-    // check if id is a number
     if (isNaN(id)) {
       alert('ID must be a number!');
       return;
     }
-    // check if age is a number
+    if (id <= 0) {
+      alert('ID must be a strictly positive number!');
+      return;
+    }
+    if (id % 1 !== 0) {
+      alert('ID must be an integer!');
+      return;
+    }
     if (isNaN(age)) {
       alert('Age must be a number!');
       return;
     }
-    // check if salary is a number
+    if (age <= 0) {
+      alert('Age must be a strictly positive number!');
+      return;
+    }
+    if (age % 1 !== 0) {
+      alert('Age must be an integer!');
+      return;
+    }
     if (isNaN(salary)) {
       alert('Salary must be a number!');
       return;
     }
-    // check if productivity score is a number between 0 and 10
-    if (isNaN(productivityScore) || productivityScore < 0 || productivityScore > 10) {
-      alert('Productivity score must be a number between 0 and 10!');
+    if (salary <= 0) {
+      alert('Salary must be a strictly positive number!');
       return;
     }
-    // check if email is valid
+    if (isNaN(productivityScore) || productivityScore < 0 || productivityScore > 10 || productivityScore % 1 !== 0) {
+      alert('Productivity score must be an integer between 0 and 10!');
+      return;
+    }
     if (!email.includes('@')) {
       alert('Email must be valid!');
       return;
     }
+    if (name.length > 50 || email.length > 50 || job.length > 50 || strengths.length > 50 || weaknesses.length > 50) {
+      alert('Name, email, job title, strengths, and weaknesses must be less than 50 characters!');
+      return;
+    }
+    if (name.trim().length === 0 || email.trim().length === 0 || job.trim().length === 0 || strengths.trim().length === 0 || weaknesses.trim().length === 0) {
+      alert('Name, email, job title, strengths, and weaknesses must not be empty!');
+      return;
+    }
+
+
+
 
     const newEmployee = {
       id: parseInt(id, 10),  // Assuming ID is a number

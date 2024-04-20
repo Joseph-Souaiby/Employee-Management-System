@@ -16,6 +16,14 @@ function UpdateCompletion({empid,taskid,refresh,weight,completion_percentage}) {
   const handleShow = () => setShow(true);
 
     const handleUpdate = async () => {
+        if (isNaN(percent)){
+          alert("Percentage Added Must Be A Number")
+          return
+        }
+        if (percent % 1 !== 0){
+          alert("Percentage Added Must Be An Integer")
+          return
+        }
         if (percent > weight - completion_percentage){
           alert("Percentage Added Exceeds Max Weight For This Task")
           return
