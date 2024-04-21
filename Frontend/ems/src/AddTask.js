@@ -28,6 +28,11 @@ function AddTask() {
             alert('ID must be a number');
             return;
         }
+        // check if id is stricly positive
+        if (parseInt(id,10) <= 0) {
+            alert('ID must be strictly positive');
+            return;
+        }
         // check if end date is in the future
         if (moment(endDate).isBefore(moment().format('YYYY-MM-DD'))) {
             alert('End date must be in the future');
